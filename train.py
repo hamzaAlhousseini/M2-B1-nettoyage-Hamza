@@ -24,6 +24,7 @@ import numpy as np
 import pandas as pd
 import sklearn
 from dotenv import load_dotenv
+from joblib import parallel_backend
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
@@ -46,6 +47,8 @@ from features import (
     NUMERICAL_FEATURES,
     ajouter_variables,
 )
+
+from nettoyage import nettoyer
 from model.train_baseline import build_pipeline as build_v1
 
 ROOT = Path(__file__).resolve().parent
@@ -53,20 +56,18 @@ MODEL_DIR = ROOT / "model"
 TEST_MONTHS = 4
 TARGET = "is_canceled"
 # Passe à "2.1.0" quand le nettoyage est branché (tâche 5) : le modèle v2.0.0 reste intact pour la comparaison
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 
 load_dotenv(ROOT / ".env")
 
-# Les colonnes qui trahissent la réponse ne sont même pas chargées (cf. RESULTATS.md, tâche 4)
+# Les colonnes source sont chargées pour l'audit et la déduplication ; seules INPUT_FEATURES entrent dans le modèle.
 QUERY = text(
     f"""
     SELECT h.code AS hotel,
-           {", ".join(f"r.{c}" for c in INPUT_FEATURES if c != "hotel")},
-           r.arrival_date,
-           r.{TARGET}
+           r.*
     FROM reservations AS r
     JOIN hotels AS h ON h.hotel_id = r.hotel_id
-    ORDER BY r.arrival_date
+    ORDER BY r.arrival_date, r.reservation_id
     """
 )
 
@@ -132,7 +133,8 @@ def tune_C(X: pd.DataFrame, y: pd.Series) -> tuple[float, pd.DataFrame]:
         return_train_score=True,
         n_jobs=-1,
     )
-    search.fit(X, y)
+    with parallel_backend("threading"):
+        search.fit(X, y)
     trace = pd.DataFrame(search.cv_results_)[
         ["param_classifier__estimator__C", "mean_train_score", "mean_test_score", "std_test_score"]
     ].round(3)
@@ -174,8 +176,9 @@ def evaluate(model, X: pd.DataFrame, y: pd.Series) -> dict:
 def main() -> None:
     engine = create_engine(os.environ["DATABASE_URL"])
     df = load_data(engine)
-    # TODO (tâche 5) : nettoyer df ici avec nettoyage.nettoyer(), et afficher son compte rendu
-    train, test = split_train_test(df)
+    df1, compte_rendu = nettoyer(df)
+    print("Compte rendu du nettoyage :", compte_rendu)
+    train, test = split_train_test(df1)
     print(f"Entraînement : {len(train)} réservations | test : {len(test)} réservations")
 
     X_train, y_train = train[INPUT_FEATURES], train[TARGET]

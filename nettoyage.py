@@ -24,13 +24,47 @@ def imputer_enfants_manquants(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     out.loc[manquants, "children"] = 0
     return out, int(manquants.sum())
 
+def supprimer_reservations_sans_adulte(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """Supprime les réservations avec un nombre d'adultes hors de [1, 10].
 
-# --- TODO (tâche 4) : tes règles, une fonction chacune, sur le même modèle -------------------------------
+    Les valeurs nulles ne sont pas concernées ; les bornes retenues sont celles de l'audit.
+    """
+    hors_bornes = df["adults"].lt(1) | df["adults"].gt(10)
+    out = df.loc[~hors_bornes].copy()
+    return out, int(hors_bornes.sum())
 
+
+def supprimer_sans_occupant_et_sans_nuit(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """Supprime les réservations sans adulte, enfant, bébé ni nuitée."""
+    nuits = df["stays_in_weekend_nights"] + df["stays_in_week_nights"]
+    occupants = df["adults"].fillna(0) + df["children"].fillna(0) + df["babies"].fillna(0)
+    sans_occupant_ni_nuit = occupants.eq(0) & nuits.eq(0)
+    out = df.loc[~sans_occupant_ni_nuit].copy()
+    return out, int(sans_occupant_ni_nuit.sum())
+
+
+def supprimer_checkout_sans_nuit(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """Supprime les séjours marqués Check-Out qui ne comportent aucune nuitée."""
+    nuits = df["stays_in_weekend_nights"] + df["stays_in_week_nights"]
+    checkout_sans_nuit = df["reservation_status"].eq("Check-Out") & nuits.eq(0)
+    out = df.loc[~checkout_sans_nuit].copy()
+    return out, int(checkout_sans_nuit.sum())
+
+def supprimer_reservations_enfant_seul(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """Supprime les réservations indiquant 0 adulte et au moins 1 enfant.
+
+    Une réservation avec des enfants mais sans adulte n'est pas cohérente pour ce jeu de données.
+    """
+    enfant_seul = df["adults"].eq(0) & df["children"].gt(0)
+    out = df.loc[~enfant_seul].copy()
+    return out, int(enfant_seul.sum())
 
 # Ordre d'application. Ajoute tes règles ici.
 REGLES = [
     imputer_enfants_manquants,
+    supprimer_sans_occupant_et_sans_nuit,
+    supprimer_checkout_sans_nuit,
+    supprimer_reservations_sans_adulte,
 ]
 
 
