@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    env_file: .env
+    ports:
+      - "5433:5432"   # 5433 sur le poste : évite le conflit avec un PostgreSQL local
+    volumes:
+      # Scripts exécutés automatiquement au PREMIER démarrage (base vide) : schéma puis chargement
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      # Les données de la base persistent entre deux `docker compose down` / `up`
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  pgdata:

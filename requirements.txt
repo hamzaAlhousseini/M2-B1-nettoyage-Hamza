@@ -1,0 +1,17 @@
+# Données
+pandas==2.2.3
+numpy==2.1.3
+SQLAlchemy==2.0.36
+psycopg[binary]==3.2.3
+python-dotenv==1.0.1
+
+# Modèle — même version de scikit-learn que la v1 (cf. M0-B1)
+scikit-learn==1.6.1
+joblib==1.5.1
+
+# Tests
+pytest==8.3.5
+
+# Notebooks et graphiques
+ipykernel==6.29.5
+matplotlib==3.9.2

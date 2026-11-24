@@ -1,0 +1,84 @@
+{
+  "model_name": "cancellation_model",
+  "version": "2.0.0",
+  "trained_on": "2026-11-12",
+  "algorithm": "LogisticRegression + FixedThresholdClassifier",
+  "scikit_learn_version": "1.6.1",
+  "features": [
+    "hotel",
+    "arrival_date_month",
+    "market_segment",
+    "deposit_type",
+    "customer_type",
+    "country",
+    "lead_time",
+    "stays_in_weekend_nights",
+    "stays_in_week_nights",
+    "adults",
+    "children",
+    "adr",
+    "previous_cancellations",
+    "total_of_special_requests",
+    "required_car_parking_spaces"
+  ],
+  "computed_features": [
+    "total_nights",
+    "weekend_share",
+    "has_children",
+    "guests",
+    "adr_per_guest",
+    "has_special_requests"
+  ],
+  "requires_module": "features.ajouter_variables",
+  "target": "is_canceled",
+  "train_period": [
+    "2015-07-01",
+    "2016-08-31"
+  ],
+  "test_period": [
+    "2016-09-01",
+    "2016-12-31"
+  ],
+  "hyperparameters": {
+    "C": 10.0,
+    "decision_threshold": 0.2
+  },
+  "test_metrics": {
+    "f1": 0.734,
+    "recall": 0.754,
+    "precision": 0.715,
+    "roc_auc": 0.866,
+    "confusion_matrix": {
+      "tn": 10065,
+      "fp": 2276,
+      "fn": 1862,
+      "tp": 5708
+    }
+  },
+  "test_metrics_threshold_0_5": {
+    "f1": 0.62,
+    "recall": 0.47,
+    "precision": 0.908,
+    "roc_auc": 0.866,
+    "confusion_matrix": {
+      "tn": 11980,
+      "fp": 361,
+      "fn": 4010,
+      "tp": 3560
+    }
+  },
+  "test_metrics_v1_replayed": {
+    "f1": 0.575,
+    "recall": 0.418,
+    "precision": 0.923,
+    "roc_auc": 0.867,
+    "confusion_matrix": {
+      "tn": 12079,
+      "fp": 262,
+      "fn": 4408,
+      "tp": 3162
+    }
+  },
+  "training_seconds": 1.3,
+  "model_size_mb": 0.012
+}
