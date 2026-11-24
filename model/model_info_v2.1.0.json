@@ -44,41 +44,41 @@
     "decision_threshold": 0.2
   },
   "test_metrics": {
-    "f1": 0.728,
-    "recall": 0.742,
-    "precision": 0.714,
-    "roc_auc": 0.868,
+    "f1": 0.735,
+    "recall": 0.755,
+    "precision": 0.716,
+    "roc_auc": 0.867,
     "confusion_matrix": {
-      "tn": 9900,
-      "fp": 2249,
-      "fn": 1946,
-      "tp": 5601
+      "tn": 10033,
+      "fp": 2261,
+      "fn": 1846,
+      "tp": 5701
     }
   },
   "test_metrics_threshold_0_5": {
-    "f1": 0.619,
-    "recall": 0.469,
-    "precision": 0.909,
-    "roc_auc": 0.868,
+    "f1": 0.62,
+    "recall": 0.471,
+    "precision": 0.907,
+    "roc_auc": 0.867,
     "confusion_matrix": {
-      "tn": 11795,
-      "fp": 354,
-      "fn": 4008,
-      "tp": 3539
+      "tn": 11929,
+      "fp": 365,
+      "fn": 3994,
+      "tp": 3553
     }
   },
   "test_metrics_v1_replayed": {
-    "f1": 0.573,
+    "f1": 0.571,
     "recall": 0.413,
-    "precision": 0.933,
-    "roc_auc": 0.861,
+    "precision": 0.924,
+    "roc_auc": 0.863,
     "confusion_matrix": {
-      "tn": 11924,
-      "fp": 225,
-      "fn": 4427,
-      "tp": 3120
+      "tn": 12037,
+      "fp": 257,
+      "fn": 4430,
+      "tp": 3117
     }
   },
-  "training_seconds": 2.5,
+  "training_seconds": 3.6,
   "model_size_mb": 0.012
 }
